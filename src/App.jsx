@@ -135,7 +135,7 @@ const App = () => {
   }, [activeTab, loveMeter]);
 
   return (
-    <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-2xl relative overflow-hidden font-sans select-none custom-app-container">
+    <div className="flex flex-col h-screen w-full max-w-md md:max-w-5xl mx-auto bg-white shadow-2xl relative overflow-hidden md:my-4 md:h-[calc(100vh-2rem)] md:rounded-3xl font-sans select-none custom-app-container">
       {/* Dynamic Background Decorations */}
       <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-rose-100/40 rounded-full blur-3xl -z-10 pulse-bg" />
       <div className="absolute bottom-[-5%] right-[-5%] w-64 h-64 bg-pink-100/40 rounded-full blur-3xl -z-10 pulse-bg" style={{ animationDelay: '2s' }} />
@@ -146,7 +146,7 @@ const App = () => {
           
           {/* HOME VIEW */}
           {activeTab === 'home' && (
-            <div className="flex flex-col items-center p-6 space-y-8 tab-transition">
+            <div className="flex flex-col items-center p-6 md:p-8 space-y-8 tab-transition">
               <div className="text-center space-y-3">
                 <div className="relative inline-block">
                   <h1 className="text-4xl font-extrabold text-pink-600 tracking-tight">Onty's Corner</h1>
@@ -155,7 +155,7 @@ const App = () => {
                 <p className="text-pink-400 font-medium italic">"The world is better with you in it."</p>
               </div>
 
-              <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl w-full max-w-sm border border-pink-50 space-y-6">
+              <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl w-full max-w-sm md:max-w-2xl border border-pink-50 space-y-6">
                 <h2 className="text-xl font-bold text-center text-gray-700">How's my girl today?</h2>
                 <div className="grid grid-cols-3 gap-4">
                   {[
@@ -178,7 +178,7 @@ const App = () => {
                 </div>
               </div>
 
-              <div className="w-full max-w-sm bg-gradient-to-r from-pink-400 to-rose-400 p-5 rounded-3xl shadow-lg text-white transform transition-transform hover:scale-[1.02]">
+              <div className="w-full max-w-sm md:max-w-2xl bg-gradient-to-r from-pink-400 to-rose-400 p-5 rounded-3xl shadow-lg text-white transform transition-transform hover:scale-[1.02]">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/20 rounded-2xl">
                     <Star size={24} fill="currentColor" />
@@ -217,7 +217,7 @@ const App = () => {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5 chat-scroll-area">
+              <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-5 chat-scroll-area">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
                     <div className={`max-w-[86%] px-4 py-3 rounded-[1.5rem] shadow-sm text-[13px] leading-relaxed backdrop-blur-sm ${
@@ -242,10 +242,10 @@ const App = () => {
               </div>
 
               <div className="p-4 pb-7 bg-white/92 border-t border-pink-100 backdrop-blur-md">
-                <div className="max-w-md mx-auto mb-2 px-1">
+                <div className="max-w-md md:max-w-3xl mx-auto mb-2 px-1">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-pink-400">Quick Questions</p>
                 </div>
-                <div className="max-w-md mx-auto mb-3 flex gap-2 overflow-x-auto pb-1 chat-scroll-area">
+                <div className="max-w-md md:max-w-3xl mx-auto mb-3 flex gap-2 overflow-x-auto pb-1 chat-scroll-area">
                   {SELECTED_QUESTIONS.map((question) => (
                     <button
                       key={question}
@@ -256,7 +256,7 @@ const App = () => {
                     </button>
                   ))}
                 </div>
-                <div className="max-w-md mx-auto relative flex items-end gap-2 bg-gradient-to-r from-white to-pink-50/60 rounded-[1.6rem] p-2 border border-pink-200/80 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all shadow-sm">
+                <div className="max-w-md md:max-w-3xl mx-auto relative flex items-end gap-2 bg-gradient-to-r from-white to-pink-50/60 rounded-[1.6rem] p-2 border border-pink-200/80 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all shadow-sm">
                   <textarea
                     ref={inputRef}
                     rows="1"
@@ -334,7 +334,7 @@ const App = () => {
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-6 z-10 animate-in zoom-in duration-500">
-                  <div className="bg-white p-8 rounded-[2rem] shadow-2xl border border-pink-100 text-center space-y-6 w-full max-w-[90%] transform hover:scale-[1.02] transition-transform">
+                  <div className="bg-white p-8 rounded-[2rem] shadow-2xl border border-pink-100 text-center space-y-6 w-full max-w-[90%] md:max-w-[520px] transform hover:scale-[1.02] transition-transform">
                     <div className="w-24 h-24 bg-gradient-to-br from-pink-200 to-rose-100 rounded-full flex items-center justify-center mx-auto mb-2 shadow-inner relative">
                       <Gift size={48} className="text-pink-600 animate-bounce relative z-10" />
                       <Sparkles className="absolute top-0 right-0 text-yellow-400 animate-pulse" />
@@ -361,8 +361,8 @@ const App = () => {
 
           {/* SURPRISE VIEW */}
           {activeTab === 'surprises' && (
-            <div className="p-6 flex flex-col items-center space-y-8 tab-transition">
-              <div className="w-full max-w-sm bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-pink-50 transform hover:rotate-1 transition-transform">
+            <div className="p-6 md:p-8 flex flex-col items-center space-y-8 tab-transition">
+              <div className="w-full max-w-sm md:max-w-2xl bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-pink-50 transform hover:rotate-1 transition-transform">
                 <div className="h-56 bg-gradient-to-br from-pink-400 to-rose-300 flex items-center justify-center relative overflow-hidden">
                   <Gift size={80} className="text-white animate-bounce relative z-10" />
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]" />
@@ -389,7 +389,7 @@ const App = () => {
       </main>
 
       {/* Modern Navigation Bar */}
-      <nav className="h-24 bg-white/95 backdrop-blur-xl border-t border-pink-50 px-8 flex items-center justify-between pb-6 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]">
+      <nav className="h-20 md:h-24 bg-white/95 backdrop-blur-xl border-t border-pink-50 px-4 md:px-8 flex items-center justify-between pb-4 md:pb-6 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]">
         {[
           { id: 'home', icon: Smile, label: 'Home' },
           { id: 'chat', icon: MessageCircle, label: 'Chat' },
