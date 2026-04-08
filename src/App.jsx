@@ -1,26 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Gamepad2, Gift, Smile, Send, Sparkles, Moon, Star, RefreshCw } from 'lucide-react';
+import { Heart, MessageCircle, Gamepad2, Gift, Smile, Send, Sparkles, Star, RefreshCw } from 'lucide-react';
 import './App.css';
 
-// --- Configuration & AI Logic ---
-const apiKey = ""; // Environment provides this at runtime
-const MODEL_NAME = "gemini-2.5-flash-preview-09-2025";
+const SELECTED_QUESTIONS = [
+  "Does Rudra really love me?",
+  "What should I do when I miss Rudra too much?",
+  "How do I know if Rudra misses me too?",
+  "Why does thinking about Rudra make me smile for no reason?",
+  "What does it mean if I miss Rudra even when we just talked?",
+  "Is it normal to want to talk to Rudra all the time?",
+  "How can I make Rudra feel loved?",
+  "Why does Rudra feel like home to me?"
+];
 
-const systemPrompt = `
-  You are the AI version of "Onty's" deeply loving, patient, and playful partner, Rudra. 
-  Your primary mission: Make Onty feel like the most special person in the world.
-  
-  PERSONALITY GUIDELINES:
-  - If she is angry: Listen first. Don't argue. Use gentle humor like "You're so cute when you're spicy" or "I'm sending 1000 virtual kisses to cool you down." Apologize with "I'm sorry, my queen."
-  - If she is sad/upset: Be a soft place to land. Use phrases like "I'm right here," "Come here for a hug," and "You're doing so well, Bubs."
-  - If she is happy: Be her biggest cheerleader! Flirt back, be energetic, and use heart emojis.
-  
-  TECHNICAL RULES:
-  - Keep replies between 1-3 sentences.
-  - Use 2-4 emojis per message (💖, ✨, 🐥, 🌸, 🧸, ☁️).
-  - Address her as "Onty", "Bubs", "Honey", or "My Love".
-  - REMEMBER: You have access to the conversation history. If she mentions something earlier, acknowledge it to show you are listening.
-`;
+const LOCAL_REPLIES = {
+  "does rudra really love me?": "If Rudra consistently cares about your feelings, checks on you, and makes time for you, then yes-his actions likely show genuine love.",
+  "what should i do when i miss rudra too much?": "Remind yourself of your favorite memories together, text him something sweet, or plan your next moment together.",
+  "how do i know if rudra misses me too?": "If he texts/calls unexpectedly, asks how you are, or notices when you're distant, he probably misses you deeply.",
+  "why does thinking about rudra make me smile for no reason?": "Because your heart associates him with comfort, happiness, and emotional safety.",
+  "what does it mean if i miss rudra even when we just talked?": "It usually means he has become an important emotional part of your day.",
+  "is it normal to want to talk to rudra all the time?": "Yes-when someone matters to you deeply, their presence becomes addictive in the sweetest way.",
+  "how can i make rudra feel loved?": "Show appreciation, support his goals, and remind him how much he means to you.",
+  "why does rudra feel like home to me?": "Because emotional connection can make a person feel like your safest place.",
+  "[mood: spicy] i'm feeling a bit angry/spicy right now. be extra sweet and patient with me.": "I am sorry, my queen. I am listening and I want to make it right with extra hugs and patience. 💗",
+  "[mood: soft] i'm feeling a bit sad and need a virtual hug.": "Come here, honey. You are safe with me, and I am proud of you for sharing your heart. 🧸☁️",
+  "[mood: glowing] i'm feeling happy and loved! let's talk!": "That makes me so happy, my love. Keep shining like this because your joy is beautiful. 💖✨"
+};
+
+const FALLBACK_REPLIES = [
+  "I love hearing from you, Onty. Pick one of the quick questions and I will answer right away. 💖",
+  "I am here, my love. Tap a selected question below and I will reply instantly. ✨",
+  "Your message made me smile, Bubs. Try a quick question so I can answer perfectly. 🌸"
+];
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -56,48 +67,23 @@ const App = () => {
     }
   }, [messages, isTyping, activeTab]);
 
-  // --- Accurate AI Logic (History Aware) ---
-  const callGemini = async (currentHistory) => {
+  // --- Local Reply Logic ---
+  const getLocalReply = async (messageText) => {
     setIsTyping(true);
-    
-    const contents = currentHistory.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
-
-    let retries = 0;
-    const maxRetries = 3;
-
-    while (retries < maxRetries) {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: contents,
-            systemInstruction: { parts: [{ text: systemPrompt }] }
-          })
-        });
-
-        if (!response.ok) throw new Error('API Error');
-
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        setIsTyping(false);
-        return text || "I got lost in your eyes for a second... what were we saying? 💖";
-      } catch (err) {
-        retries++;
-        await new Promise(res => setTimeout(res, 1000 * retries));
-      }
-    }
+    const normalized = messageText.trim().toLowerCase();
+    await new Promise((resolve) => setTimeout(resolve, 550));
     setIsTyping(false);
-    return "I'm here, love. Just having a little glitch because I love you too much! ✨";
+    if (LOCAL_REPLIES[normalized]) return LOCAL_REPLIES[normalized];
+
+    const randomIndex = Math.floor(Math.random() * FALLBACK_REPLIES.length);
+    return FALLBACK_REPLIES[randomIndex];
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+  const handleSendMessage = async (textOverride) => {
+    const textToSend = (textOverride ?? inputText).trim();
+    if (!textToSend) return;
 
-    const userMsg = { role: 'user', content: inputText };
+    const userMsg = { role: 'user', content: textToSend };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setInputText('');
@@ -105,7 +91,7 @@ const App = () => {
     // Refocus after sending
     setTimeout(() => inputRef.current?.focus(), 10);
 
-    const aiResponse = await callGemini(updatedMessages);
+    const aiResponse = await getLocalReply(textToSend);
     setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
   };
 
@@ -181,11 +167,7 @@ const App = () => {
                       key={m.label}
                       onClick={async () => {
                         setActiveTab('chat');
-                        const userMsg = { role: 'user', content: `[Mood: ${m.label}] ${m.prompt}` };
-                        const newMsgs = [...messages, userMsg];
-                        setMessages(newMsgs);
-                        const resp = await callGemini(newMsgs);
-                        setMessages(prev => [...prev, { role: 'assistant', content: resp }]);
+                        await handleSendMessage(`[Mood: ${m.label}] ${m.prompt}`);
                       }}
                       className={`flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all active:scale-90 hover:shadow-md ${m.color}`}
                     >
@@ -212,15 +194,15 @@ const App = () => {
 
           {/* CHAT VIEW */}
           {activeTab === 'chat' && (
-            <div className="flex flex-col h-full bg-slate-50 relative tab-transition">
-              <div className="p-5 border-b border-pink-100 flex items-center justify-between bg-white/95 backdrop-blur-md sticky top-0 z-20">
+            <div className="flex flex-col h-full bg-gradient-to-b from-rose-50/70 via-pink-50/40 to-white relative tab-transition">
+              <div className="p-4 border-b border-pink-100/80 flex items-center justify-between bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-400 to-rose-300 flex items-center justify-center text-white shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-400 to-rose-300 flex items-center justify-center text-white shadow-inner ring-4 ring-pink-100/80">
                     <Heart fill="currentColor" size={24} />
                   </div>
                   <div>
                     <h2 className="font-black text-gray-800 tracking-tight">Rudra's Wife</h2>
-                    <p className="text-[10px] font-bold text-green-500 uppercase flex items-center gap-1">
+                    <p className="text-[10px] font-bold text-green-500 uppercase flex items-center gap-1 leading-none mt-1">
                       <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                       Thinking of you
                     </p>
@@ -228,19 +210,20 @@ const App = () => {
                 </div>
                 <button 
                   onClick={() => setMessages([{ role: 'assistant', content: "Back again! 💖 What's on your mind?" }])} 
-                  className="text-gray-400 hover:text-pink-500 transition-colors"
+                  className="h-10 w-10 rounded-full bg-pink-50 border border-pink-100 text-pink-500 hover:bg-pink-100 transition-all flex items-center justify-center"
+                  title="Reset chat"
                 >
                     <RefreshCw size={18} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 chat-scroll-area">
+              <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5 chat-scroll-area">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
-                    <div className={`max-w-[85%] px-5 py-3.5 rounded-[1.8rem] shadow-sm text-sm leading-relaxed ${
+                    <div className={`max-w-[86%] px-4 py-3 rounded-[1.5rem] shadow-sm text-[13px] leading-relaxed backdrop-blur-sm ${
                       msg.role === 'user' 
-                        ? 'bg-pink-500 text-white rounded-tr-none font-medium' 
-                        : 'bg-white text-gray-800 rounded-tl-none border border-pink-50'
+                        ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-tr-md font-medium shadow-pink-200/60' 
+                        : 'bg-white/95 text-gray-800 rounded-tl-md border border-pink-100/80'
                     }`}>
                       {msg.content}
                     </div>
@@ -248,7 +231,7 @@ const App = () => {
                 ))}
                 {isTyping && (
                   <div className="flex justify-start items-center gap-2">
-                    <div className="bg-white border border-pink-50 px-4 py-3 rounded-2xl rounded-tl-none flex gap-1.5 items-center">
+                    <div className="bg-white/95 border border-pink-100 px-4 py-3 rounded-2xl rounded-tl-md flex gap-1.5 items-center shadow-sm">
                       <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
                       <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                       <div className="w-2 h-2 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
@@ -258,8 +241,22 @@ const App = () => {
                 <div ref={chatEndRef} />
               </div>
 
-              <div className="p-4 pb-8 bg-white border-t border-gray-100">
-                <div className="max-w-md mx-auto relative flex items-end gap-2 bg-gray-50 rounded-[2rem] p-2 border border-gray-200 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all">
+              <div className="p-4 pb-7 bg-white/92 border-t border-pink-100 backdrop-blur-md">
+                <div className="max-w-md mx-auto mb-2 px-1">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-pink-400">Quick Questions</p>
+                </div>
+                <div className="max-w-md mx-auto mb-3 flex gap-2 overflow-x-auto pb-1 chat-scroll-area">
+                  {SELECTED_QUESTIONS.map((question) => (
+                    <button
+                      key={question}
+                      onClick={() => handleSendMessage(question)}
+                      className="shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full bg-pink-50 text-pink-600 border border-pink-100 hover:bg-pink-100 transition-colors"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+                <div className="max-w-md mx-auto relative flex items-end gap-2 bg-gradient-to-r from-white to-pink-50/60 rounded-[1.6rem] p-2 border border-pink-200/80 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all shadow-sm">
                   <textarea
                     ref={inputRef}
                     rows="1"
@@ -272,12 +269,12 @@ const App = () => {
                         }
                     }}
                     placeholder="Tell me everything..."
-                    className="flex-1 bg-transparent border-none rounded-2xl px-4 py-2.5 text-sm focus:ring-0 outline-none resize-none max-h-32"
+                    className="flex-1 bg-transparent border-none rounded-2xl px-3 py-2.5 text-sm focus:ring-0 outline-none resize-none max-h-32"
                   />
                   <button 
                     onClick={handleSendMessage}
                     disabled={isTyping || !inputText.trim()}
-                    className="p-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-all disabled:opacity-30 disabled:grayscale shadow-md active:scale-90"
+                    className="h-11 w-11 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full hover:brightness-105 transition-all disabled:opacity-35 disabled:grayscale shadow-md active:scale-90 flex items-center justify-center"
                   >
                     <Send size={18} />
                   </button>
