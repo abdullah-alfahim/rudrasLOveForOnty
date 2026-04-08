@@ -135,10 +135,25 @@ const App = () => {
   }, [activeTab, loveMeter]);
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-md md:max-w-5xl mx-auto bg-white shadow-2xl relative overflow-hidden md:my-4 md:h-[calc(100vh-2rem)] md:rounded-3xl font-sans select-none custom-app-container">
+    <div className="flex flex-col h-screen w-full max-w-md md:max-w-2xl lg:max-w-3xl mx-auto bg-white shadow-2xl relative overflow-hidden md:my-4 md:h-[calc(100vh-2rem)] md:rounded-3xl border border-pink-100/80 font-sans select-none custom-app-container">
       {/* Dynamic Background Decorations */}
       <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-rose-100/40 rounded-full blur-3xl -z-10 pulse-bg" />
       <div className="absolute bottom-[-5%] right-[-5%] w-64 h-64 bg-pink-100/40 rounded-full blur-3xl -z-10 pulse-bg" style={{ animationDelay: '2s' }} />
+
+      <header className="px-4 md:px-6 pt-[calc(env(safe-area-inset-top)+0.5rem)] pb-3 border-b border-pink-100/80 bg-white/80 backdrop-blur-md sticky top-0 z-30">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.24em] font-black text-pink-400">Love Space</p>
+            <h1 className="text-lg md:text-xl font-black text-pink-600 leading-tight">Rudra x Onty</h1>
+          </div>
+          <div className="px-3 py-1.5 rounded-full bg-pink-50 border border-pink-100 text-pink-500 text-[10px] md:text-xs font-bold">
+            {activeTab === 'home' && 'Home'}
+            {activeTab === 'chat' && 'Chat'}
+            {activeTab === 'games' && 'Love Game'}
+            {activeTab === 'surprises' && 'Gift'}
+          </div>
+        </div>
+      </header>
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-hidden relative">
@@ -146,18 +161,24 @@ const App = () => {
           
           {/* HOME VIEW */}
           {activeTab === 'home' && (
-            <div className="flex flex-col items-center p-6 md:p-8 space-y-8 tab-transition">
+            <div className="flex flex-col items-center p-5 md:p-8 space-y-6 md:space-y-8 tab-transition">
               <div className="text-center space-y-3">
                 <div className="relative inline-block">
-                  <h1 className="text-4xl font-extrabold text-pink-600 tracking-tight">Onty's Corner</h1>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-pink-600 tracking-tight">Onty's Corner</h2>
                   <Sparkles className="absolute -top-4 -right-6 text-yellow-400 animate-pulse" />
                 </div>
                 <p className="text-pink-400 font-medium italic">"The world is better with you in it."</p>
               </div>
 
-              <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2.5rem] shadow-xl w-full max-w-sm md:max-w-2xl border border-pink-50 space-y-6">
+              <div className="w-full max-w-sm md:max-w-lg rounded-[2rem] p-4 md:p-5 bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xl">
+                <p className="text-[11px] uppercase tracking-[0.2em] font-black text-white/80">Today</p>
+                <p className="mt-1 text-base md:text-lg font-bold">How are you feeling right now, love?</p>
+                <p className="mt-1 text-sm text-white/90">Pick a mood and get an instant sweet reply.</p>
+              </div>
+
+              <div className="bg-white/90 backdrop-blur-md p-5 sm:p-7 rounded-[2.5rem] shadow-xl w-full max-w-sm md:max-w-lg border border-pink-50 space-y-5">
                 <h2 className="text-xl font-bold text-center text-gray-700">How's my girl today?</h2>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                   {[
                     { label: 'Spicy', icon: '😤', color: 'bg-red-50 text-red-500 border-red-100', prompt: "I'm feeling a bit angry/spicy right now. Be extra sweet and patient with me." },
                     { label: 'Soft', icon: '🥺', color: 'bg-blue-50 text-blue-500 border-blue-100', prompt: "I'm feeling a bit sad and need a virtual hug." },
@@ -169,7 +190,7 @@ const App = () => {
                         setActiveTab('chat');
                         await handleSendMessage(`[Mood: ${m.label}] ${m.prompt}`);
                       }}
-                      className={`flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all active:scale-90 hover:shadow-md ${m.color}`}
+                      className={`flex flex-col items-center justify-center p-4 min-h-24 rounded-3xl border-2 transition-all active:scale-90 hover:shadow-md ${m.color}`}
                     >
                       <span className="text-4xl mb-2">{m.icon}</span>
                       <span className="text-xs font-bold uppercase tracking-tight">{m.label}</span>
@@ -178,7 +199,7 @@ const App = () => {
                 </div>
               </div>
 
-              <div className="w-full max-w-sm md:max-w-2xl bg-gradient-to-r from-pink-400 to-rose-400 p-5 rounded-3xl shadow-lg text-white transform transition-transform hover:scale-[1.02]">
+              <div className="w-full max-w-sm md:max-w-lg bg-gradient-to-r from-pink-400 to-rose-400 p-5 rounded-3xl shadow-lg text-white transform transition-transform hover:scale-[1.02]">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/20 rounded-2xl">
                     <Star size={24} fill="currentColor" />
@@ -217,10 +238,10 @@ const App = () => {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5 space-y-5 chat-scroll-area">
+              <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-5 space-y-4 md:space-y-5 chat-scroll-area">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
-                    <div className={`max-w-[86%] px-4 py-3 rounded-[1.5rem] shadow-sm text-[13px] leading-relaxed backdrop-blur-sm ${
+                    <div className={`max-w-[88%] md:max-w-[78%] px-4 py-3 rounded-[1.5rem] shadow-sm text-[13px] md:text-sm leading-relaxed backdrop-blur-sm ${
                       msg.role === 'user' 
                         ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-tr-md font-medium shadow-pink-200/60' 
                         : 'bg-white/95 text-gray-800 rounded-tl-md border border-pink-100/80'
@@ -241,22 +262,22 @@ const App = () => {
                 <div ref={chatEndRef} />
               </div>
 
-              <div className="p-4 pb-7 bg-white/92 border-t border-pink-100 backdrop-blur-md">
-                <div className="max-w-md md:max-w-3xl mx-auto mb-2 px-1">
+              <div className="p-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:pb-7 bg-white/92 border-t border-pink-100 backdrop-blur-md">
+                <div className="max-w-md md:max-w-2xl mx-auto mb-2 px-1">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-pink-400">Quick Questions</p>
                 </div>
-                <div className="max-w-md md:max-w-3xl mx-auto mb-3 flex gap-2 overflow-x-auto pb-1 chat-scroll-area">
+                <div className="max-w-md md:max-w-2xl mx-auto mb-3 flex gap-2 overflow-x-auto pb-1 chat-scroll-area">
                   {SELECTED_QUESTIONS.map((question) => (
                     <button
                       key={question}
                       onClick={() => handleSendMessage(question)}
-                      className="shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full bg-pink-50 text-pink-600 border border-pink-100 hover:bg-pink-100 transition-colors"
+                      className="shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full bg-pink-50 text-pink-600 border border-pink-100 hover:bg-pink-100 active:scale-95 transition-colors"
                     >
                       {question}
                     </button>
                   ))}
                 </div>
-                <div className="max-w-md md:max-w-3xl mx-auto relative flex items-end gap-2 bg-gradient-to-r from-white to-pink-50/60 rounded-[1.6rem] p-2 border border-pink-200/80 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all shadow-sm">
+                <div className="max-w-md md:max-w-2xl mx-auto relative flex items-end gap-2 bg-gradient-to-r from-white to-pink-50/60 rounded-[1.6rem] p-2 border border-pink-200/80 focus-within:border-pink-300 focus-within:ring-2 focus-within:ring-pink-100 transition-all shadow-sm">
                   <textarea
                     ref={inputRef}
                     rows="1"
@@ -286,14 +307,14 @@ const App = () => {
           {/* GAMES VIEW - ONTY'S LOVE JAR */}
           {activeTab === 'games' && (
             <div className="flex flex-col h-full overflow-hidden relative bg-gradient-to-b from-rose-50 to-white tab-transition">
-              <div className="p-8 text-center space-y-1 z-10">
+              <div className="p-6 md:p-8 text-center space-y-1 z-10">
                 <h2 className="text-3xl font-black text-pink-600 uppercase tracking-tighter italic">Onty's Love Jar</h2>
                 <p className="text-sm text-pink-400 font-bold">Catch the magic sparks to fill the jar!</p>
               </div>
 
               {!reward ? (
                 <>
-                  <div className="flex-1 flex flex-col items-center justify-center relative z-10 pointer-events-none mt-4">
+                  <div className="flex-1 flex flex-col items-center justify-center relative z-10 pointer-events-none mt-1 md:mt-4">
                      <div className="w-32 h-48 border-4 border-pink-200 rounded-b-3xl rounded-t-lg relative overflow-hidden bg-white/40 backdrop-blur-sm shadow-[0_0_30px_rgba(244,114,182,0.2)]">
                         <div className="absolute -top-1 left-[-4px] right-[-4px] h-4 bg-pink-300 rounded-sm z-20"></div>
                         <div 
@@ -334,7 +355,7 @@ const App = () => {
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-6 z-10 animate-in zoom-in duration-500">
-                  <div className="bg-white p-8 rounded-[2rem] shadow-2xl border border-pink-100 text-center space-y-6 w-full max-w-[90%] md:max-w-[520px] transform hover:scale-[1.02] transition-transform">
+                  <div className="bg-white p-7 md:p-8 rounded-[2rem] shadow-2xl border border-pink-100 text-center space-y-6 w-full max-w-[90%] md:max-w-[520px] transform hover:scale-[1.02] transition-transform">
                     <div className="w-24 h-24 bg-gradient-to-br from-pink-200 to-rose-100 rounded-full flex items-center justify-center mx-auto mb-2 shadow-inner relative">
                       <Gift size={48} className="text-pink-600 animate-bounce relative z-10" />
                       <Sparkles className="absolute top-0 right-0 text-yellow-400 animate-pulse" />
@@ -361,14 +382,14 @@ const App = () => {
 
           {/* SURPRISE VIEW */}
           {activeTab === 'surprises' && (
-            <div className="p-6 md:p-8 flex flex-col items-center space-y-8 tab-transition">
-              <div className="w-full max-w-sm md:max-w-2xl bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-pink-50 transform hover:rotate-1 transition-transform">
+            <div className="p-5 md:p-8 flex flex-col items-center space-y-8 tab-transition">
+              <div className="w-full max-w-sm md:max-w-lg bg-white rounded-[2.2rem] md:rounded-[3rem] shadow-2xl overflow-hidden border border-pink-50 transform hover:rotate-1 transition-transform">
                 <div className="h-56 bg-gradient-to-br from-pink-400 to-rose-300 flex items-center justify-center relative overflow-hidden">
                   <Gift size={80} className="text-white animate-bounce relative z-10" />
                   <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]" />
                   <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-white/20 rounded-full" />
                 </div>
-                <div className="p-8 space-y-6">
+                <div className="p-6 md:p-8 space-y-5 md:space-y-6">
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-[10px] font-black uppercase tracking-widest">
                     <Star size={12} fill="currentColor" /> Exclusive Gift
                   </div>
@@ -389,7 +410,7 @@ const App = () => {
       </main>
 
       {/* Modern Navigation Bar */}
-      <nav className="h-20 md:h-24 bg-white/95 backdrop-blur-xl border-t border-pink-50 px-4 md:px-8 flex items-center justify-between pb-4 md:pb-6 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]">
+      <nav className="h-20 md:h-24 bg-white/95 backdrop-blur-xl border-t border-pink-50 px-3 sm:px-4 md:px-8 flex items-center justify-between pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:pb-6 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.05)]">
         {[
           { id: 'home', icon: Smile, label: 'Home' },
           { id: 'chat', icon: MessageCircle, label: 'Chat' },
@@ -399,15 +420,15 @@ const App = () => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`flex flex-col items-center justify-center space-y-1.5 transition-all relative ${
+            className={`flex flex-col items-center justify-center space-y-1.5 transition-all relative px-2 py-1 rounded-xl ${
               activeTab === item.id ? 'text-pink-600 scale-110' : 'text-gray-400 hover:text-pink-300'
             }`}
           >
             {activeTab === item.id && (
                 <div className="absolute -top-3 w-1.5 h-1.5 bg-pink-500 rounded-full shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             )}
-            <item.icon size={26} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-            <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
+            <item.icon className="h-5 w-5 md:h-6 md:w-6" strokeWidth={activeTab === item.id ? 2.5 : 2} />
+            <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest">{item.label}</span>
           </button>
         ))}
       </nav>
